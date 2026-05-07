@@ -1214,6 +1214,20 @@ async function inviteUser(){var nome=document.getElementById('nu-nome').value.tr
 async function loadTenants(){try{var r=await apiFetch('/api/admin/tenants');if(r.status!==200)return;var tenants=r.data;document.getElementById('sa-tot').textContent=tenants.length;document.getElementById('sa-pending').textContent=tenants.filter(function(t){return t.status==='pending';}).length;document.getElementById('sa-active').textContent=tenants.filter(function(t){return t.status==='active';}).length;document.getElementById('sa-suspended').textContent=tenants.filter(function(t){return t.status==='suspended';}).length;var body=document.getElementById('sa-body');if(!tenants.length){body.innerHTML='<div style="padding:2rem;text-align:center;font-size:13px;color:#AAA">Nessun tenant registrato.</div>';return;}body.innerHTML=tenants.map(function(t){var sb=t.status==='active'?'bg':t.status==='pending'?'ba':'br';var actions='';if(t.status==='pending')actions+='<button class="sa-btn sa-approve" onclick="approveTenant(\''+t.id+'\')">Approva</button> ';if(t.status==='active')actions+='<button class="sa-btn sa-suspend" onclick="changeTenantStatus(\''+t.id+'\',\'suspended\')">Sospendi</button>';if(t.status==='suspended')actions+='<button class="sa-btn sa-activate" onclick="changeTenantStatus(\''+t.id+'\',\'active\')">Riattiva</button>';return'<div class="sa-row"><div><div style="font-weight:500">'+t.name+'</div><div style="font-size:12px;color:#888">'+t.email+'</div></div><div><span class="badge bi">'+t.plan+'</span></div><div><span class="badge '+sb+'">'+t.status+'</span></div><div style="font-size:13px">'+t.userCount+' utenti</div><div>'+actions+'</div></div>';}).join('');}catch(e){showToast('Errore caricamento tenant','#E24B4A');}}
 async function approveTenant(id){try{var r=await apiFetch('/api/admin/approve/'+id,{method:'POST'});if(r.status===200){showToast('Tenant approvato!','#1D9E75');loadTenants();}else showToast(r.data.error||'Errore','#E24B4A');}catch(e){showToast('Errore','#E24B4A');}}
 async function changeTenantStatus(id,status){try{var r=await apiFetch('/api/admin/tenants/'+id+'/status',{method:'PATCH',body:JSON.stringify({status:status})});if(r.status===200){showToast('Stato aggiornato','#1D9E75');loadTenants();}else showToast(r.data.error||'Errore','#E24B4A');}catch(e){showToast('Errore','#E24B4A');}}
+/* SUPERADMIN */
+.sa-table{background:#fff;border:1px solid #E8E8E8;border-radius:14px;overflow:hidden;margin-top:1rem}
+.sa-thead{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:8px;padding:8px 14px;font-size:11px;font-weight:700;color:#AAA;text-transform:uppercase;background:#FAFAFA;border-bottom:1px solid #F0F0F0}
+.sa-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:8px;padding:10px 14px;border-bottom:1px solid #F8F8F8;align-items:center;font-size:13px}
+.sa-row:last-child{border-bottom:none}
+.sa-btn{font-size:11px;padding:4px 10px;border-radius:12px;border:none;cursor:pointer;font-weight:600}
+.sa-approve{background:#E1F5EE;color:#085041}
+.sa-suspend{background:#FAEEDA;color:#633806}
+.sa-activate{background:#E8EDF8;color:#1D3A8A}
+.toast{position:fixed;bottom:24px;right:24px;background:#1D3A8A;color:#fff;font-size:13px;padding:10px 20px;border-radius:20px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;font-weight:500}
+.toast.show{opacity:1}
+.logo-box{border:1.5px dashed #DDD;border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;background:#FAFAFA;transition:border-color .15s}
+.logo-box:hover{border-color:#1D3A8A}
+.limit-banner{background:#FAEEDA;border:1px solid #F0C070;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;margin-bottom:1rem;font-size:13px;color:#633806}
 </script>
 </body>
 </html>
